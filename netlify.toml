@@ -2,5 +2,10 @@
 directory = "netlify/functions"
 
 [build]
-command = "echo 'Building...'"
+command = "npm install && npm run build"
 publish = "."
+
+[[redirects]]
+from = "/.netlify/functions/*"
+to = "/.netlify/functions/:splat"
+status = 200
