@@ -27,14 +27,26 @@ exports.handler = async (event, context) => {
                                              let data = '';
                                              res.on('data', (chunk) => { data += chunk; });
                                              res.on('end', () => {
-                                                           resolve({
-                                                                           statusCode: res.statusCode,
-                                                                           headers: {
-                                                                                             'Content-Type': 'application/json',
-                                                                                             'Access-Control-Allow-Origin': '*'
-                                                                           },
-                                                                           body: data
-                                                           });
+                                                               try {
+                                                                                   // Only parse if status is 200
+                                                                                   if (res.statusCode === 200) {
+                                                                                                         JSON.parse(data); // Validate JSON
+                                                                                         }
+                                                                                   resolve({
+                                                                                                         statusCode: res.statusCode,
+                                                                                                         headers: {
+                                                                                                                                 'Content-Type': 'application/json',
+                                                                                                                                 'Access-Control-Allow-Origin': '*'
+                                                                                                               },
+                                                                                                         body: data
+                                                                                         });
+                                                               } catch (parseError) {
+                                                                                   resolve({
+                                                                                                         statusCode: 500,
+                                                                                                         headers: { 'Content-Type': 'application/json' },
+                                                                                                         body: JSON.stringify({ error: 'Invalid JSON response from Airtable' })
+                                                                                         });
+                                                               }
                                              });
                                  });
 
